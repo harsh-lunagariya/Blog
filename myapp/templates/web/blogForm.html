@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Blog{% endblock %}
+
+{% block content %}
+
+  <!-- Main Wrapper -->
+  <div class="flex min-h-screen flex-col items-center justify-center px-6 py-12 lg:px-8">
+    
+    <!-- Header -->
+    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+      <h2 class="text-4xl font-semibold tracking-tight text-gray-900">Share Your Thoughts</h2>
+      <p class="mt-2 text-lg text-gray-600">Everyone has a story. Inspire others by sharing yours in a few words or a full blog post.</p>
+    </div>
+
+    <!-- Blog Card -->
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+      <div class="bg-gray-100 rounded-lg px-6 py-8 shadow-sm border border-gray-200">
+        <form class="space-y-6" action="{% url "createBlog" %}" method="POST">
+          {% csrf_token %}
+          <!-- Title -->
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+            <div class="mt-2">
+              <input id="title" name="title" type="text" required 
+                class="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 sm:text-sm"
+                placeholder="title">
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div>
+            <label for="content" class="block text-sm font-medium text-gray-700">Add Your Thoughts</label>
+            <div class="mt-2">
+                <textarea name="content" id="" required class="block w-full h-64 rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 sm:text-sm"
+                placeholder="somthing..."></textarea>
+            </div>
+          </div>
+
+          
+          <!-- Submit Button -->
+          <div>
+            <button type="submit" 
+              class="w-full flex justify-center rounded-md bg-gray-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200">
+              Share
+            </button>
+          </div>
+          <div>
+              <div class='flex justify-end'>
+                  <a href="{% url "home" %}"
+                  class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-300 hover:text-gray-700 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                  Back To Home
+                </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

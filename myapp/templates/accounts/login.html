@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}Login | Blog Dashboard{% endblock %}
+
+{% block content %}
+
+  <!-- Main Wrapper -->
+  <div class="flex min-h-screen flex-col items-center justify-center px-6 py-12 lg:px-8">
+    
+    <!-- Header -->
+    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+      <h2 class="text-4xl font-semibold tracking-tight text-gray-900">Welcome Back</h2>
+      <p class="mt-2 text-lg text-gray-600">Login to continue to your blog dashboard</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+      <div class="bg-gray-100 rounded-lg px-6 py-8 shadow-sm border border-gray-200">
+        <form class="space-y-6" action="{% url "login" %}" method="POST">
+          {% csrf_token %}
+          <!-- Username -->
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <div class="mt-2">
+              <input name="username" type="text" required 
+                class="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 sm:text-sm"
+                placeholder="user123">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <div class="mt-2">
+              <input id="password" name="password" type="password" required 
+                class="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 sm:text-sm"
+                placeholder="••••••••">
+            </div>
+          </div>
+
+          
+
+          
+          <!-- Login Button -->
+          <div>
+            <button type="submit"
+              class="w-full flex justify-center rounded-md bg-gray-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200">
+              Sign in
+            </button>
+          </div>
+        </form>
+        {% if error %}
+        
+        <!-- Error Message Block -->
+        <div class="mt-4 rounded-md bg-red-50 border border-red-200 p-4">
+        <div class="flex">
+            <!-- Icon -->
+            <svg class="h-5 w-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.366-.756 1.42-.756 1.786 0l6.857 14.143A1 1 0 0116 19H4a1 1 0 01-.9-1.758L8.257 3.1zM11 15a1 1 0 10-2 0 1 1 0 002 0zm-1-8a.75.75 0 00-.75.75v4.5a.75.75 0 001.5 0v-4.5A.75.75 0 0010 7z" clip-rule="evenodd" />
+            </svg>
+            <!-- Message Text -->
+            <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Login failed</h3>
+            <div class="mt-1 text-sm text-red-700">
+                <p>Invalid username or password. Please try again.</p>
+            </div>
+            </div>
+        </div>
+        </div>
+        {% endif %}
+
+        <!-- Divider -->
+        <div class="mt-6 flex items-center justify-center">
+          <p class="text-sm text-gray-600">Don’t have an account?
+            <a href="{% url "register" %}" class="font-medium text-gray-900 hover:text-blue-700">Register</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
