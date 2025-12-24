@@ -13,13 +13,22 @@ def article_slig_update(sender, instance, **kwargs):
                 article = instance,
                 old_slug = old_article.slug
             )
-            
-    base_slug = slugify(instance.title)
-    slug = base_slug
-    count = 1
+            base_slug = slugify(instance.title)
+            slug = base_slug
+            count = 1
 
-    while Article.objects.filter(slug=slug).exists():
-        slug = f"{base_slug}-{count}"
-        count += 1
+            while Article.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{count}"
+                count += 1
 
-    instance.slug = slug
+            instance.slug = slug
+    else:     
+        base_slug = slugify(instance.title)
+        slug = base_slug
+        count = 1
+
+        while Article.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{count}"
+            count += 1
+
+        instance.slug = slug
