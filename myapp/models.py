@@ -1,16 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 # Create your models here.
 
 class Article(models.Model):
     article_id = models.AutoField(primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True,max_length=220, blank=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='blog')
     likes = models.ManyToManyField(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name='liked_article',
         blank=True
     )
@@ -21,16 +22,22 @@ class Article(models.Model):
     def __str__(self):
         return self.title
     
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(default='Passionate entrepreneur and business strategist. Helping startups scale through data-driven decisions and smart leadership.', blank=True)
+class ArticleSlugHistory(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name="slug_history"
+    )
+    old_slug = models.SlugField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
-    
+        return self.old_slug
+   
+
 class Comment(models.Model):
     blog = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -40,7 +47,7 @@ class Comment(models.Model):
 
 class CommentReply(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_reply')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

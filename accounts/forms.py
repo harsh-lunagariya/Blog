@@ -1,16 +1,8 @@
 from django import forms
-from django.contrib.auth.models import User
-from .models import Article,Profile, Comment, CommentReply
+from django.contrib.auth import get_user_model
+from .models import Profile
 
-class BlogForm(forms.ModelForm):
-    class Meta:
-        model = Article
-        fields = ['title','content']
-        widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Enter your title here'}),
-            'content': forms.Textarea(attrs={'placeholder': 'Write your content...'}),
-        }
-        
+User = get_user_model()   
 
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -31,9 +23,16 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError("Password do not match!")
         return cleaned_data
     
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already taken")
+        return username
+    
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=150)
     password = forms.CharField(widget=forms.PasswordInput)
+
 
 class EditProfileForm(forms.ModelForm):
     class Meta:
@@ -42,13 +41,3 @@ class EditProfileForm(forms.ModelForm):
         widgets = {
             'bio': forms.Textarea()
         }
-
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['text']
-
-class CommentReplyForm(forms.ModelForm):
-    class Meta:
-        model = CommentReply
-        fields = ['text']

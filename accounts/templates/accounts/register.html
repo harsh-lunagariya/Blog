@@ -79,7 +79,7 @@
           </div>
         </form>
 
-        {% if error %}
+        {% if form.errors %}
         
         <!-- Error Message Block -->
         <div class="mt-4 rounded-md bg-red-50 border border-red-200 p-4">
@@ -92,9 +92,11 @@
             <!-- Message Text -->
             <div class="ml-3">
             <h3 class="text-sm font-medium text-red-800">Login failed</h3>
-            <div class="mt-1 text-sm text-red-700">
-                <p>{{error}}</p>
-            </div>
+            <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
+                {% for field, error in form.errors.items %}
+                    {{ error }}
+                {% endfor %}
+            </ul>
             </div>
         </div>
         </div>

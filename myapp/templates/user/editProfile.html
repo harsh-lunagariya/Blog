@@ -35,7 +35,7 @@
 
           <!-- Back Button -->
          <div class="flex justify-end">
-            <a href="/u/{{ user.username }}/"
+            <a href="{% url "profile" user.username %}"
               class="py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-full border border-gray-200 hover:bg-gray-300 hover:text-gray-700 focus:ring-4 focus:ring-gray-100">
               Back To Profile
             </a>
