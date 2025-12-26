@@ -7,14 +7,14 @@ from .forms import RegisterForm, LoginForm, EditProfileForm
 from django.views.decorators.cache import never_cache
 from .models import Profile
 from myapp.models import Article
-
+from django.contrib import messages
 # Create your views here.
 
 User = get_user_model()
 
 @require_http_methods(["GET","POST"])
 def register_view(request):
-    # if user already logged in then it can not access this view
+    # redirect logged-in users
     if request.user.is_authenticated:     
         return redirect('home')
 
@@ -23,13 +23,19 @@ def register_view(request):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            user = User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name']
+            )
             login(request,user)
-            return render(request, 'accounts/register.html', {'form':form})
+            messages.success(request, "Your account has been created successfully.")
+            return redirect("home")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{error}")
     else:
         form = RegisterForm()
     return render(request, 'accounts/register.html', {'form':form})
@@ -50,6 +56,7 @@ def login_view(request):
             user = authenticate(request, username=username,password=password)
             if user is not None:
                 login(request,user)
+                messages.info(request, f"👋 Welcome back {user.first_name}! Glad to see you again.")
                 return redirect(next_url)
             else:
                 error_msg = "Invalid Credentials!"
@@ -64,12 +71,13 @@ def login_view(request):
 @require_POST
 def logout_view(request):
     logout(request)
+    messages.add_message(request, messages.INFO, "You have been logged out successfully.", extra_tags="logout")
     return redirect('home') 
     
 
 @require_GET
 def user_profile(request,username):
-    user = User.objects.get(username= username)
+    user = get_object_or_404(User, username= username)
     articles = Article.objects.filter(user=user)
     flag = articles.exists()
     profile = Profile.objects.get(user=user)
@@ -78,7 +86,7 @@ def user_profile(request,username):
 
 @require_http_methods(["GET","POST"])
 def edit_profile(request,username):
-    user = User.objects.get(username= username)
+    user = get_object_or_404(User, username= username)
     profile = get_object_or_404(Profile,user=user)
     if profile.user != request.user:
         return redirect('home')
@@ -87,7 +95,10 @@ def edit_profile(request,username):
         form = EditProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
+            messages.success(request, "Your profile has been updated successfully.")
             return redirect('profile',username=username)
+        else:
+            messages.error(request, "Something went wrong, please try again later.")
     else:
         form = EditProfileForm(instance=profile)
 

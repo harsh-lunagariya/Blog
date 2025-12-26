@@ -7,6 +7,7 @@ from .models import Article, ArticleSlugHistory, Comment, CommentReply
 from django.http import JsonResponse
 from django.db.models import Prefetch
 from django.views.decorators.cache import never_cache
+from django.contrib import messages
 
 # Create your views here.
 
@@ -33,7 +34,10 @@ def blog_create_view(request):
             article = form.save(commit=False)
             article.user = request.user
             article.save()
+            messages.success(request, "Your blog has been posted successfully.")
             return redirect('home')
+        else:
+            messages.error(request, "Failed to post the blog. Please try again.")
     else:
         form = BlogForm()
     return render(request, 'web/blogForm.html',{'form':form,'next':next_url})
@@ -55,7 +59,10 @@ def blog_edit_view(request,slug):
         form = BlogForm(request.POST, instance=article)
         if form.is_valid():
             form.save()
+            messages.success(request, "Your blog has been updated successfully.")
             return redirect('profile', username = request.user.username)
+        else:
+            messages.error(request, "Failed to update the blog. Please try again.")
     else:
         form = BlogForm(instance=article)
     
@@ -76,6 +83,7 @@ def blog_delete_view(request, slug):
     
     if request.method == "POST":
         article.delete()
+        messages.success(request, "Blog deleted successfully.")
         return redirect('profile', username = request.user.username)
     return redirect('blog', slug=slug)
     
@@ -110,7 +118,7 @@ def like_post(request, slug):
         liked = True
     return JsonResponse({
         'liked':liked,
-        'total_like':article.total_likes()
+        'total_likes':article.total_likes()
     })
 
 @never_cache
