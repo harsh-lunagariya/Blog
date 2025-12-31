@@ -42,15 +42,26 @@ def blog_create_view(request):
         form = BlogForm()
     return render(request, 'web/blogForm.html',{'form':form,'next':next_url})
 
-@never_cache
-@login_required(login_url='login')
-@require_http_methods(["GET","POST"])
-def blog_edit_view(request,slug):
+@require_GET
+def article(request,slug):
     try:
         article = get_object_or_404(Article, slug=slug)
     except:
         oldslug_obj = get_object_or_404(ArticleSlugHistory, old_slug=slug)
         article = oldslug_obj.article
+        
+    date = article.created_at.date()
+    comments = Comment.objects.filter(blog=article).prefetch_related(
+        Prefetch('comment_reply', queryset=CommentReply.objects.all())
+    )
+    return render(request, 'user/blogPage.html',{'article':article,'date':date, 'comments':comments})
+
+@never_cache
+@login_required(login_url='login')
+@require_http_methods(["GET","POST"])
+def blog_edit_view(request,slug):
+    
+    article = get_object_or_404(Article, slug=slug)
     
     if article.user != request.user:
         return redirect('home')
@@ -72,11 +83,7 @@ def blog_edit_view(request,slug):
 @login_required(login_url='login')
 @require_http_methods(["GET","POST"])
 def blog_delete_view(request, slug):
-    try:
-        article = get_object_or_404(Article, slug=slug)
-    except:
-        oldslug_obj = get_object_or_404(ArticleSlugHistory, old_slug=slug)
-        article = oldslug_obj.article
+    article = get_object_or_404(Article, slug=slug)
 
     if article.user != request.user:
         return redirect('home')
@@ -86,30 +93,11 @@ def blog_delete_view(request, slug):
         messages.success(request, "Blog deleted successfully.")
         return redirect('profile', username = request.user.username)
     return redirect('blog', slug=slug)
-    
-
-@require_GET
-def article(request,slug):
-    try:
-        article = get_object_or_404(Article, slug=slug)
-    except:
-        oldslug_obj = get_object_or_404(ArticleSlugHistory, old_slug=slug)
-        article = oldslug_obj.article
-        
-    date = article.created_at.date()
-    comments = Comment.objects.filter(blog=article).prefetch_related(
-        Prefetch('comment_reply', queryset=CommentReply.objects.all())
-    )
-    return render(request, 'user/blogPage.html',{'article':article,'date':date, 'comments':comments})
-
 
 @login_required(login_url='login')
 def like_post(request, slug):
-    try:
-        article = get_object_or_404(Article, slug=slug)
-    except:
-        oldslug_obj = get_object_or_404(ArticleSlugHistory, old_slug=slug)
-        article = oldslug_obj.article
+    article = get_object_or_404(Article, slug=slug)
+    
     if request.user in article.likes.all():
         article.likes.remove(request.user)
         liked = False
@@ -125,11 +113,8 @@ def like_post(request, slug):
 @login_required(login_url='login')
 @require_http_methods(["GET","POST"])
 def comment_view(request,slug):
-    try:
-        article = get_object_or_404(Article, slug=slug)
-    except:
-        oldslug_obj = get_object_or_404(ArticleSlugHistory, old_slug=slug)
-        article = oldslug_obj.article
+    article = get_object_or_404(Article, slug=slug)
+    
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():

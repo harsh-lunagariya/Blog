@@ -18,7 +18,6 @@ def register_view(request):
     if request.user.is_authenticated:     
         return redirect('home')
 
-    # error_msg = None
     if request.method == "POST":
         form = RegisterForm(request.POST)
 
