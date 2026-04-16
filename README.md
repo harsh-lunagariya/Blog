@@ -6,6 +6,9 @@ This is a simple Django blog application where users can join the platform, publ
 
 The project includes a custom user system with profile support. After creating an account, a user can log in, log out, create blog posts, edit or delete their own posts, visit profile pages, and read content shared by other users.
 
+<img width="1910" height="1094" alt="image" src="https://github.com/user-attachments/assets/995764d1-99d1-4a24-a4aa-87bfd4941359" />
+
+
 ## Main Features
 
 - User registration with username, first name, last name, and password
