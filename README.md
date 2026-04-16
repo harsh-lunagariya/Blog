@@ -40,7 +40,6 @@ The profile page displays the user's full name, username, bio, and all blogs pub
 ### Authentication Pages
 
 The project also includes separate register and login pages. New users can create an account, and existing users can sign in to access features like posting blogs, liking articles, commenting, and managing their own content.
-Here’s a cleaner, more professional version of your README section with fixed grammar, consistency, and better structure:
 
 ---
 
